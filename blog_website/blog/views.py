@@ -1,28 +1,21 @@
 from django.shortcuts import render
 from .models import Post
-# from django.http import HttpResponse
+from django.views.generic import ListView, DetailView, CreateView
 
-# posts = [
-#      {
-#         'author' : 'Kartik',
-#         'title' : 'Post 1',
-#         'content' : 'Hi! I am Kartik',
-#         'date' : '13 November 2020'
-#      },
-#      {
-#         'author' : 'Nikita',
-#         'title' : 'Post 2',
-#         'content' : 'Hi! I am Nikita',
-#         'date' : '14 November 2020'
-#      }
-# ]
+class PostListView(ListView):
+    model = Post
+    template_name = 'blog/home.html' 
+    context_object_name = 'posts'
 
-def home(request):
-    context = {
-        'posts' : Post.objects.all()
-    }
+class PostCreateView(CreateView):
+    model = Post
+    fields = ['title', 'content']
+    success_url = '/'
 
-    return render(request, 'blog/home.html', context) 
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+    
 
 def about(request):
     return render(request, 'blog/about.html')
